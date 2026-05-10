@@ -31,13 +31,13 @@
     }
 
     /* ── SCREENS ── */
-    .screen { display: none; }
-    .screen.active { display: block; }
+    .screen { display: none !important; }
+    .screen.active { display: block !important; }
 
     /* ── LOGIN SCREEN ── */
-    #loginScreen {
+    #loginScreen.active {
+      display: flex !important;
       min-height: 100vh;
-      display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
@@ -518,7 +518,7 @@
     .empty-txt { font-size: 14px; color: var(--text2); }
   </style>
 </head>
-<body>
+<body onload="document.querySelectorAll('.screen').forEach(s=>s.style.display='none');document.getElementById('loginScreen').style.display='flex'">
 
 <!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
 <div id="loginScreen" class="screen active">
@@ -879,8 +879,9 @@
 
   // ── HELPERS ──
   function setScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    const el = document.getElementById(id);
+    el.style.display = id === 'loginScreen' ? 'flex' : 'block';
   }
 
   function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
