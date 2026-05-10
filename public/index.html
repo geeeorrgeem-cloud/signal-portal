@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIGNAL Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F2F2F7;
+      --card: #FFFFFF;
+      --red: #FF3B30;
+      --red-dark: #D92E24;
+      --text: #1C1C1E;
+      --text2: #8E8E93;
+      --text3: #C7C7CC;
+      --border: #E5E5EA;
+      --green: #34C759;
+      --blue: #007AFF;
+      --orange: #FF9500;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none !important; }
+    .screen.active { display: block !important; }
+
+    /* ── LOGIN SCREEN ── */
+    #loginScreen.active {
+      display: flex !important;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-wrap { width: 100%; max-width: 340px; }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .app-icon-lg {
+      width: 80px; height: 80px;
+      border-radius: 20px;
+      overflow: hidden;
+      display: inline-flex;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 24px rgba(255,59,48,0.3);
+    }
+
+    .app-icon-lg img { width: 100%; height: 100%; object-fit: cover; }
+
+    .login-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .login-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .login-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 0.5px solid var(--border);
+    }
+
+    .login-field {
+      padding: 14px 16px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .login-field:last-child { border-bottom: none; }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      width: 64px;
+      flex-shrink: 0;
+    }
+
+    .login-field input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .login-field input::placeholder { color: var(--text3); }
+
+    .btn-main {
+      width: 100%;
+      padding: 15px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: -0.2px;
+    }
+
+    .btn-main:hover { background: var(--red-dark); }
+    .btn-main:active { transform: scale(0.97); }
+    .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .login-toggle {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .login-toggle span {
+      color: var(--red);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .error-box {
+      background: rgba(255,59,48,0.08);
+      border: 0.5px solid rgba(255,59,48,0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--red);
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ── NAV BAR ── */
+    .navbar {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 0.5px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-icon-sm {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .app-icon-sm img { width: 100%; height: 100%; object-fit: cover; }
+
+    .nav-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+
+    .nav-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-admin { background: rgba(255,59,48,0.1); color: var(--red); }
+    .badge-user { background: rgba(52,199,89,0.1); color: var(--green); }
+
+    .logout-btn {
+      font-size: 13px;
+      color: var(--red);
+      cursor: pointer;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,59,48,0.08);
+      border: none;
+      font-family: inherit;
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page { padding: 20px; max-width: 640px; margin: 0 auto; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 4px;
+      margin-bottom: 8px;
+      margin-top: 24px;
+    }
+
+    .section-title:first-child { margin-top: 0; }
+
+    /* iOS-style card list */
+    .card-list {
+      background: var(--card);
+      border-radius: 12px;
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+    }
+
+    .card-row {
+      display: flex;
+      align-items: center;
+      padding: 13px 16px;
+      gap: 12px;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .card-row:last-child { border-bottom: none; }
+
+    .row-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    .row-body { flex: 1; min-width: 0; }
+
+    .row-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .row-sub {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .chevron { color: var(--text3); font-size: 16px; }
+
+    /* Status badges */
+    .pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .pill-green { background: rgba(52,199,89,0.12); color: var(--green); }
+    .pill-red { background: rgba(255,59,48,0.1); color: var(--red); }
+    .pill-gray { background: rgba(142,142,147,0.12); color: var(--text2); }
+    .pill-orange { background: rgba(255,149,0,0.12); color: var(--orange); }
+
+    /* ── BOOKMARKLET SECTION ── */
+    .bm-box {
+      background: var(--card);
+      border-radius: 12px;
+      border: 0.5px solid var(--border);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .bm-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--red);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 12px;
+      text-decoration: none;
+      border: 2px dashed rgba(255,255,255,0.4);
+      transition: background 0.15s;
+      font-family: inherit;
+      cursor: grab;
+      margin-bottom: 10px;
+    }
+
+    .bm-link:hover { background: var(--red-dark); }
+    .bm-link:active { cursor: grabbing; }
+
+    .bm-hint {
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    /* Token box */
+    .token-box {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--text2);
+      word-break: break-all;
+      text-align: left;
+      margin-top: 14px;
+    }
+
+    .token-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    /* ── SITES GRID ── */
+    .sites-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .site-tag {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .site-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 0.5px solid var(--border);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text);
+    }
+
+    .stat-num.red { color: var(--red); }
+    .stat-num.green { color: var(--green); }
+
+    .stat-lbl {
+      font-size: 11px;
+      color: var(--text2);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 999;
+      padding: 0 0 20px;
+      display: none;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+      margin: 0 16px;
+    }
+
+    .modal-header {
+      padding: 16px 20px 12px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title { font-size: 16px; font-weight: 700; }
+
+    .modal-close {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text2);
+    }
+
+    .modal-body { padding: 16px 20px 20px; }
+
+    .modal-field { margin-bottom: 14px; }
+
+    .modal-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+    }
+
+    .modal-input:focus { border-color: var(--red); }
+
+    /* User actions */
+    .action-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .action-btn:hover { opacity: 0.8; }
+    .btn-red { background: rgba(255,59,48,0.1); color: var(--red); }
+    .btn-green { background: rgba(52,199,89,0.1); color: var(--green); }
+    .btn-gray { background: var(--bg); color: var(--text2); }
+
+    /* Copy button */
+    .copy-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 8px;
+      transition: background 0.1s;
+    }
+
+    .copy-btn:hover { background: var(--border); }
+
+    /* Loading state */
+    .loading { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 32px 20px; }
+    .empty-icon { font-size: 36px; margin-bottom: 8px; }
+    .empty-txt { font-size: 14px; color: var(--text2); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="loginScreen" class="screen" style="display:flex">
+  <div class="login-wrap">
+    <div class="login-header">
+      <div class="app-icon-lg"><img src="app_logo.png" alt="S"></div>
+      <div class="login-title">SIGNAL</div>
+      <div class="login-sub">Smart Import System</div>
+    </div>
+
+    <!-- User login (default) -->
+    <div id="userLoginForm">
+      <div class="login-card">
+        <div class="login-field">
+          <div class="field-label">მეილი</div>
+          <input type="email" id="uEmail" placeholder="user@example.com" />
+        </div>
+        <div class="login-field">
+          <div class="field-label">პაროლი</div>
+          <input type="password" id="uPassword" placeholder="••••••••" />
+        </div>
+      </div>
+      <button class="btn-main" onclick="userLogin()">შესვლა</button>
+      <div class="error-box" id="userErr"></div>
+      <div class="login-toggle">ადმინი ხარ? <span onclick="showAdminLogin()">ადმინად შესვლა</span></div>
+    </div>
+
+    <!-- Admin login -->
+    <div id="adminLoginForm" style="display:none">
+      <div class="login-card">
+        <div class="login-field">
+          <div class="field-label">პაროლი</div>
+          <input type="password" id="aPassword" placeholder="ადმინ პაროლი" />
+        </div>
+      </div>
+      <button class="btn-main" onclick="adminLogin()">ადმინად შესვლა</button>
+      <div class="error-box" id="adminErr"></div>
+      <div class="login-toggle"><span onclick="showUserLogin()">← მომხმარებლის შესვლა</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ USER DASHBOARD ═══════════════ -->
+<div id="userScreen" class="screen" style="display:none">
+  <div class="navbar">
+    <div class="nav-brand">
+      <div class="app-icon-sm"><img src="app_logo.png" alt="S"></div>
+      <div class="nav-title">SIGNAL</div>
+    </div>
+    <div class="nav-right">
+      <span class="nav-badge badge-user" id="userEmailBadge"></span>
+      <button class="logout-btn" onclick="logout()">გასვლა</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="section-title">ბუქმარქი</div>
+    <div class="bm-box">
+      <div>
+        <a class="bm-link" id="userBookmarklet" href="#">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          SIGNAL
+        </a>
+      </div>
+      <div class="bm-hint">☝️ ეს ღილაკი გადაიტანეთ ბრაუზერის ბუქმარქების ბარში</div>
+      <div class="token-box">
+        <div class="token-label">შენი ტოკენი</div>
+        <div id="userTokenDisplay"></div>
+      </div>
+      <button class="copy-btn" onclick="copyUserToken()">📋 ტოკენის კოპირება</button>
+    </div>
+
+    <div class="section-title">მხარდაჭერილი საიტები</div>
+    <div class="card-list">
+      <div class="card-row">
+        <div class="row-icon" style="background:rgba(255,59,48,0.1)">🚗</div>
+        <div class="row-body">
+          <div class="row-title">სკანირება</div>
+          <div class="row-sub">encar.com · copart.com · iaai.com · manheim.com · cars.com · guazi.com</div>
+        </div>
+      </div>
+      <div class="card-row">
+        <div class="row-icon" style="background:rgba(52,199,89,0.1)">✅</div>
+        <div class="row-body">
+          <div class="row-title">ავტო ჩასმა</div>
+          <div class="row-sub">myauto.ge — ავტომატური ფორმის შევსება</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">გამოყენება</div>
+    <div class="card-list">
+      <div class="card-row">
+        <div class="row-icon" style="background:rgba(255,59,48,0.1); font-size:13px; font-weight:700; color:var(--red)">1</div>
+        <div class="row-body"><div class="row-title">გახსენი მანქანის გვერდი (Encar, Copart...)</div></div>
+      </div>
+      <div class="card-row">
+        <div class="row-icon" style="background:rgba(255,59,48,0.1); font-size:13px; font-weight:700; color:var(--red)">2</div>
+        <div class="row-body"><div class="row-title">დააკლიკე SIGNAL ბუქმარქი</div></div>
+      </div>
+      <div class="card-row">
+        <div class="row-icon" style="background:rgba(255,59,48,0.1); font-size:13px; font-weight:700; color:var(--red)">3</div>
+        <div class="row-body"><div class="row-title">გადადი myauto.ge → "გადატანა" ღილაკი</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN DASHBOARD ═══════════════ -->
+<div id="adminScreen" class="screen" style="display:none">
+  <div class="navbar">
+    <div class="nav-brand">
+      <div class="app-icon-sm"><img src="app_logo.png" alt="S"></div>
+      <div class="nav-title">SIGNAL</div>
+    </div>
+    <div class="nav-right">
+      <span class="nav-badge badge-admin">Admin</span>
+      <button class="logout-btn" onclick="logout()">გასვლა</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <!-- Stats -->
+    <div class="section-title">სტატისტიკა</div>
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-lbl">სულ</div></div>
+      <div class="stat-card"><div class="stat-num green" id="statActive">—</div><div class="stat-lbl">აქტიური</div></div>
+      <div class="stat-card"><div class="stat-num red" id="statBlocked">—</div><div class="stat-lbl">დაბლოკილი</div></div>
+    </div>
+
+    <!-- Add user -->
+    <div class="section-title">ახალი მომხმარებელი</div>
+    <div class="card-list">
+      <div class="card-row" onclick="openAddUser()" style="cursor:pointer">
+        <div class="row-icon" style="background:rgba(255,59,48,0.1)">➕</div>
+        <div class="row-body"><div class="row-title">მომხმარებლის დამატება</div></div>
+        <div class="chevron">›</div>
+      </div>
+    </div>
+
+    <!-- Users list -->
+    <div class="section-title">მომხმარებლები</div>
+    <div id="usersList"><div class="loading">იტვირთება...</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADD USER MODAL ═══════════════ -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">ახალი მომხმარებელი</div>
+      <button class="modal-close" onclick="closeAddUser()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <div class="modal-label">მეილი</div>
+        <input class="modal-input" id="newEmail" type="email" placeholder="user@example.com" />
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">პაროლი</div>
+        <input class="modal-input" id="newPassword" type="text" placeholder="პაროლი" />
+      </div>
+      <div class="modal-field">
+        <div class="modal-label">სახელი (არასავალდებულო)</div>
+        <input class="modal-input" id="newName" type="text" placeholder="სახელი" />
+      </div>
+      <div class="error-box" id="addUserErr" style="display:none"></div>
+      <button class="btn-main" onclick="createUser()" style="margin-top:4px">შექმნა</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE = window.location.origin;
+  let currentSession = null; // { type: 'admin'|'user', token, email }
+
+  // ── KEYBOARD ──
+  document.getElementById('uPassword').addEventListener('keydown', e => { if(e.key==='Enter') userLogin(); });
+  document.getElementById('aPassword').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+
+  // ── LOGIN TOGGLES ──
+  function showAdminLogin() {
+    document.getElementById('userLoginForm').style.display = 'none';
+    document.getElementById('adminLoginForm').style.display = 'block';
+  }
+
+  function showUserLogin() {
+    document.getElementById('adminLoginForm').style.display = 'none';
+    document.getElementById('userLoginForm').style.display = 'block';
+  }
+
+  // ── USER LOGIN ──
+  async function userLogin() {
+    const email = document.getElementById('uEmail').value.trim();
+    const password = document.getElementById('uPassword').value;
+    const err = document.getElementById('userErr');
+    err.style.display = 'none';
+
+    if (!email || !password) { showErr(err, 'შეავსე ყველა ველი'); return; }
+
+    try {
+      const r = await fetch(BASE + '/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password })
+      });
+      const d = await r.json();
+      if (!r.ok || d.error) { showErr(err, d.error === 'blocked' ? '🚫 ანგარიში დაბლოკილია' : d.error === 'inactive' ? '⏸ ანგარიში გათიშულია' : '❌ მეილი ან პაროლი არასწორია'); return; }
+      currentSession = { type: 'user', token: d.token, email: d.email };
+      showUserDashboard(d);
+    } catch(e) { showErr(err, '❌ კავშირის შეცდომა'); }
+  }
+
+  // ── ADMIN LOGIN ──
+  async function adminLogin() {
+    const password = document.getElementById('aPassword').value;
+    const err = document.getElementById('adminErr');
+    err.style.display = 'none';
+
+    try {
+      const r = await fetch(BASE + '/api/auth/admin', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ password })
+      });
+      const d = await r.json();
+      if (!r.ok || d.error) { showErr(err, '❌ პაროლი არასწორია'); return; }
+      currentSession = { type: 'admin', token: d.adminToken };
+      showAdminDashboard();
+    } catch(e) { showErr(err, '❌ კავშირის შეცდომა'); }
+  }
+
+  // ── SHOW USER DASHBOARD ──
+  function showUserDashboard(data) {
+    setScreen('userScreen');
+    document.getElementById('userEmailBadge').textContent = data.email;
+    document.getElementById('userTokenDisplay').textContent = data.token;
+    const bmJs = `javascript:(function(){var s=document.createElement('script');s.src='${BASE}/b.js?t=${encodeURIComponent(data.token)}&_='+Date.now();document.body.appendChild(s);})();`;
+    document.getElementById('userBookmarklet').href = bmJs;
+  }
+
+  // ── SHOW ADMIN DASHBOARD ──
+  async function showAdminDashboard() {
+    setScreen('adminScreen');
+    await loadUsers();
+  }
+
+  // ── LOAD USERS ──
+  async function loadUsers() {
+    const list = document.getElementById('usersList');
+    list.innerHTML = '<div class="loading">იტვირთება...</div>';
+
+    try {
+      const r = await fetch(BASE + '/api/admin/users', {
+        headers: {'x-admin-token': currentSession.token}
+      });
+      const d = await r.json();
+      if (!r.ok) { list.innerHTML = '<div class="loading">შეცდომა</div>'; return; }
+
+      const users = d.users || [];
+      document.getElementById('statTotal').textContent = users.length;
+      document.getElementById('statActive').textContent = users.filter(u => u.active && !u.blocked).length;
+      document.getElementById('statBlocked').textContent = users.filter(u => u.blocked).length;
+
+      if (users.length === 0) {
+        list.innerHTML = '<div class="empty"><div class="empty-icon">👤</div><div class="empty-txt">მომხმარებლები არ არის</div></div>';
+        return;
+      }
+
+      list.innerHTML = `<div class="card-list">${users.map(u => userRow(u)).join('')}</div>`;
+    } catch(e) {
+      list.innerHTML = '<div class="loading">შეცდომა</div>';
+    }
+  }
+
+  function userRow(u) {
+    const statusPill = u.blocked
+      ? '<span class="pill pill-red">დაბლოკილი</span>'
+      : u.active
+        ? '<span class="pill pill-green">აქტიური</span>'
+        : '<span class="pill pill-gray">გათიშული</span>';
+
+    const toggleLabel = u.blocked ? 'განბლოკვა' : (u.active ? 'გათიშვა' : 'გააქტიურება');
+    const toggleClass = u.blocked ? 'btn-green' : (u.active ? 'btn-gray' : 'btn-green');
+    const blockLabel = u.blocked ? '' : '<button class="action-btn btn-red" onclick="blockUser(\'' + u.email + '\')">დაბლოკვა</button>';
+
+    return `
+      <div class="card-row">
+        <div class="row-icon" style="background:var(--bg); font-size:18px">👤</div>
+        <div class="row-body">
+          <div class="row-title">${u.name || u.email}</div>
+          <div class="row-sub">${u.email} · გამოყენება: ${u.usageCount || 0}</div>
+        </div>
+        <div class="row-right">
+          ${statusPill}
+          <button class="action-btn ${toggleClass}" onclick="toggleUser('${u.email}', ${u.active}, ${u.blocked})">${toggleLabel}</button>
+          ${blockLabel}
+        </div>
+      </div>`;
+  }
+
+  // ── USER ACTIONS ──
+  async function toggleUser(email, active, blocked) {
+    if (blocked) {
+      await doUserAction(email, 'unblock');
+    } else {
+      await doUserAction(email, active ? 'deactivate' : 'activate');
+    }
+  }
+
+  async function blockUser(email) {
+    if (!confirm(email + ' — დაბლოკვა?')) return;
+    await doUserAction(email, 'block');
+  }
+
+  async function doUserAction(email, action) {
+    try {
+      await fetch(BASE + '/api/admin/user/action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'x-admin-token': currentSession.token},
+        body: JSON.stringify({ email, action })
+      });
+      await loadUsers();
+    } catch(e) { alert('შეცდომა'); }
+  }
+
+  // ── ADD USER MODAL ──
+  function openAddUser() { document.getElementById('addUserModal').classList.add('open'); }
+  function closeAddUser() {
+    document.getElementById('addUserModal').classList.remove('open');
+    document.getElementById('newEmail').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('newName').value = '';
+    document.getElementById('addUserErr').style.display = 'none';
+  }
+
+  async function createUser() {
+    const email = document.getElementById('newEmail').value.trim();
+    const password = document.getElementById('newPassword').value;
+    const name = document.getElementById('newName').value.trim();
+    const err = document.getElementById('addUserErr');
+    err.style.display = 'none';
+
+    if (!email || !password) { showErr(err, 'მეილი და პაროლი სავალდებულოა'); return; }
+
+    try {
+      const r = await fetch(BASE + '/api/admin/user/create', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'x-admin-token': currentSession.token},
+        body: JSON.stringify({ email, password, name })
+      });
+      const d = await r.json();
+      if (!r.ok || d.error) { showErr(err, d.error === 'exists' ? 'ეს მეილი უკვე რეგისტრირებულია' : '❌ ' + (d.error || 'შეცდომა')); return; }
+      closeAddUser();
+      await loadUsers();
+    } catch(e) { showErr(err, '❌ კავშირის შეცდომა'); }
+  }
+
+  // ── HELPERS ──
+  function setScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    const el = document.getElementById(id);
+    el.style.display = id === 'loginScreen' ? 'flex' : 'block';
+  }
+
+  function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+
+  function logout() {
+    currentSession = null;
+    document.getElementById('uEmail').value = '';
+    document.getElementById('uPassword').value = '';
+    document.getElementById('aPassword').value = '';
+    showUserLogin();
+    setScreen('loginScreen');
+  }
+
+  function copyUserToken() {
+    const t = document.getElementById('userTokenDisplay').textContent;
+    navigator.clipboard.writeText(t).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ დაკოპირდა!';
+      setTimeout(() => { btn.textContent = '📋 ტოკენის კოპირება'; }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
