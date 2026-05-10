@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SIGNAL Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:#F2F2F7;color:#1C1C1E;min-height:100vh;-webkit-font-smoothing:antialiased}
+:root{--red:#FF3B30;--red2:#D92E24;--green:#34C759;--blue:#007AFF;--orange:#FF9500;--card:#fff;--bg:#F2F2F7;--border:#E5E5EA;--t2:#8E8E93;--t3:#C7C7CC}
+
+/* SCREENS */
+#loginScreen{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}
+#userScreen,#adminScreen{display:none}
+
+/* LOGIN */
+.lw{width:100%;max-width:340px}
+.lh{text-align:center;margin-bottom:32px}
+.ai{width:80px;height:80px;border-radius:20px;overflow:hidden;display:inline-flex;margin-bottom:14px;box-shadow:0 8px 24px rgba(255,59,48,.3)}
+.ai img{width:100%;height:100%;object-fit:cover}
+.lt{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.ls{font-size:13px;color:var(--t2);margin-top:4px;font-weight:500}
+.lcard{background:var(--card);border-radius:16px;overflow:hidden;border:.5px solid var(--border)}
+.lf{padding:14px 16px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:12px}
+.lf:last-child{border-bottom:none}
+.fl{font-size:13px;font-weight:500;width:64px;flex-shrink:0}
+.lf input{flex:1;border:none;outline:none;font-size:14px;font-family:inherit;color:#1C1C1E;background:transparent}
+.lf input::placeholder{color:var(--t3)}
+.btnM{width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:12px;transition:background .15s,transform .1s;letter-spacing:-.2px}
+.btnM:hover{background:var(--red2)}
+.btnM:active{transform:scale(.97)}
+.btnM:disabled{opacity:.5;cursor:not-allowed}
+.ltog{text-align:center;margin-top:16px;font-size:13px;color:var(--t2)}
+.ltog span{color:var(--red);cursor:pointer;font-weight:600}
+.err{background:rgba(255,59,48,.08);border:.5px solid rgba(255,59,48,.2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none}
+
+/* NAVBAR */
+.nav{background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nb{display:flex;align-items:center;gap:10px}
+.ais{width:32px;height:32px;border-radius:8px;overflow:hidden}
+.ais img{width:100%;height:100%;object-fit:cover}
+.nt{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.nr{display:flex;align-items:center;gap:8px}
+.nbadge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.ba{background:rgba(255,59,48,.1);color:var(--red)}
+.bu{background:rgba(52,199,89,.1);color:var(--green)}
+.lob{font-size:13px;color:var(--red);cursor:pointer;font-weight:500;padding:6px 12px;border-radius:8px;background:rgba(255,59,48,.08);border:none;font-family:inherit}
+
+/* PAGE */
+.page{padding:20px;max-width:640px;margin:0 auto}
+.stit{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;padding:0 4px;margin-bottom:8px;margin-top:24px}
+.stit:first-child{margin-top:0}
+.clist{background:var(--card);border-radius:12px;border:.5px solid var(--border);overflow:hidden}
+.crow{display:flex;align-items:center;padding:13px 16px;gap:12px;border-bottom:.5px solid var(--border)}
+.crow:last-child{border-bottom:none}
+.ri{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.rb{flex:1;min-width:0}
+.rt{font-size:14px;font-weight:500}
+.rs{font-size:12px;color:var(--t2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rr{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.chev{color:var(--t3);font-size:16px}
+.pill{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+.pg{background:rgba(52,199,89,.12);color:var(--green)}
+.pr{background:rgba(255,59,48,.1);color:var(--red)}
+.pgr{background:rgba(142,142,147,.12);color:var(--t2)}
+
+/* BOOKMARKLET */
+.bmbox{background:var(--card);border-radius:12px;border:.5px solid var(--border);padding:20px;text-align:center}
+.bml{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--red);color:#fff;font-size:15px;font-weight:700;border-radius:12px;text-decoration:none;border:2px dashed rgba(255,255,255,.4);transition:background .15s;font-family:inherit;cursor:grab;margin-bottom:10px}
+.bml:hover{background:var(--red2)}
+.bml:active{cursor:grabbing}
+.bmh{font-size:12px;color:var(--t2)}
+.tokbox{background:var(--bg);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:12px;color:var(--t2);word-break:break-all;text-align:left;margin-top:14px}
+.toklbl{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.cpbtn{display:block;width:100%;padding:11px;background:var(--bg);border:.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;font-family:inherit;margin-top:8px}
+.cpbtn:hover{background:var(--border)}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.scard{background:var(--card);border-radius:12px;border:.5px solid var(--border);padding:14px;text-align:center}
+.snum{font-size:26px;font-weight:800;letter-spacing:-1px}
+.snum.r{color:var(--red)}.snum.g{color:var(--green)}
+.slbl{font-size:11px;color:var(--t2);font-weight:500;margin-top:2px}
+
+/* ACTION BTNS */
+.abt{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+.abt:hover{opacity:.8}
+.abr{background:rgba(255,59,48,.1);color:var(--red)}
+.abg{background:rgba(52,199,89,.1);color:var(--green)}
+.abgr{background:var(--bg);color:var(--t2)}
+
+/* MODAL */
+.mover{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:999;padding:0 0 20px}
+.mover.open{display:flex}
+.modal{background:var(--card);border-radius:16px;width:100%;max-width:400px;overflow:hidden;margin:0 16px}
+.mhdr{padding:16px 20px 12px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mtit{font-size:16px;font-weight:700}
+.mcls{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.mbdy{padding:16px 20px 20px}
+.mfld{margin-bottom:14px}
+.mlbl{font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.minp{width:100%;padding:12px 14px;background:var(--bg);border:.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:#1C1C1E;outline:none}
+.minp:focus{border-color:var(--red)}
+.load{text-align:center;padding:40px 20px;color:var(--t2);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+<div class="lw">
+  <div class="lh">
+    <div class="ai"><img src="app_logo.png" alt="S"></div>
+    <div class="lt">SIGNAL</div>
+    <div class="ls">Smart Import System</div>
+  </div>
+  <div id="uForm">
+    <div class="lcard">
+      <div class="lf"><div class="fl">მეილი</div><input type="email" id="uE" placeholder="user@example.com"/></div>
+      <div class="lf"><div class="fl">პაროლი</div><input type="password" id="uP" placeholder="••••••••"/></div>
+    </div>
+    <button class="btnM" onclick="userLogin()">შესვლა</button>
+    <div class="err" id="uErr"></div>
+    <div class="ltog">ადმინი ხარ? <span onclick="showA()">ადმინად შესვლა</span></div>
+  </div>
+  <div id="aForm" style="display:none">
+    <div class="lcard">
+      <div class="lf"><div class="fl">პაროლი</div><input type="password" id="aP" placeholder="ადმინ პაროლი"/></div>
+    </div>
+    <button class="btnM" onclick="adminLogin()">ადმინად შესვლა</button>
+    <div class="err" id="aErr"></div>
+    <div class="ltog"><span onclick="showU()">← მომხმარებლის შესვლა</span></div>
+  </div>
+</div>
+</div>
+
+<!-- USER -->
+<div id="userScreen">
+<div class="nav">
+  <div class="nb"><div class="ais"><img src="app_logo.png" alt="S"></div><div class="nt">SIGNAL</div></div>
+  <div class="nr"><span class="nbadge bu" id="uBadge"></span><button class="lob" onclick="logout()">გასვლა</button></div>
+</div>
+<div class="page">
+  <div class="stit">ბუქმარქი</div>
+  <div class="bmbox">
+    <div><a class="bml" id="uBM" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      SIGNAL
+    </a></div>
+    <div class="bmh">☝️ ეს ღილაკი გადაიტანეთ ბრაუზერის ბუქმარქების ბარში</div>
+    <div class="tokbox"><div class="toklbl">შენი ტოკენი</div><div id="uTok"></div></div>
+    <button class="cpbtn" onclick="copyTok()">📋 ტოკენის კოპირება</button>
+  </div>
+  <div class="stit">მხარდაჭერილი საიტები</div>
+  <div class="clist">
+    <div class="crow"><div class="ri" style="background:rgba(255,59,48,.1)">🚗</div><div class="rb"><div class="rt">სკანირება</div><div class="rs">encar.com · copart.com · iaai.com · manheim.com · cars.com · guazi.com · edgepipeline.com</div></div></div>
+    <div class="crow"><div class="ri" style="background:rgba(52,199,89,.1)">✅</div><div class="rb"><div class="rt">ავტო ჩასმა</div><div class="rs">myauto.ge — ავტომატური ფორმის შევსება</div></div></div>
+  </div>
+  <div class="stit">გამოყენება</div>
+  <div class="clist">
+    <div class="crow"><div class="ri" style="background:rgba(255,59,48,.1);font-size:13px;font-weight:700;color:var(--red)">1</div><div class="rb"><div class="rt">გახსენი მანქანის გვერდი (Encar, Copart...)</div></div></div>
+    <div class="crow"><div class="ri" style="background:rgba(255,59,48,.1);font-size:13px;font-weight:700;color:var(--red)">2</div><div class="rb"><div class="rt">დააკლიკე SIGNAL ბუქმარქი</div></div></div>
+    <div class="crow"><div class="ri" style="background:rgba(255,59,48,.1);font-size:13px;font-weight:700;color:var(--red)">3</div><div class="rb"><div class="rt">გადადი myauto.ge → "🚀 გადატანა" ღილაკი</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen">
+<div class="nav">
+  <div class="nb"><div class="ais"><img src="app_logo.png" alt="S"></div><div class="nt">SIGNAL</div></div>
+  <div class="nr"><span class="nbadge ba">Admin</span><button class="lob" onclick="logout()">გასვლა</button></div>
+</div>
+<div class="page">
+  <div class="stit">სტატისტიკა</div>
+  <div class="sgrid">
+    <div class="scard"><div class="snum" id="stT">—</div><div class="slbl">სულ</div></div>
+    <div class="scard"><div class="snum g" id="stA">—</div><div class="slbl">აქტიური</div></div>
+    <div class="scard"><div class="snum r" id="stB">—</div><div class="slbl">დაბლოკილი</div></div>
+  </div>
+  <div class="stit">ახალი მომხმარებელი</div>
+  <div class="clist">
+    <div class="crow" onclick="openAdd()" style="cursor:pointer">
+      <div class="ri" style="background:rgba(255,59,48,.1)">➕</div>
+      <div class="rb"><div class="rt">მომხმარებლის დამატება</div></div>
+      <div class="chev">›</div>
+    </div>
+  </div>
+  <div class="stit">მომხმარებლები</div>
+  <div id="uList"><div class="load">იტვირთება...</div></div>
+</div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="mover" id="addModal">
+<div class="modal">
+  <div class="mhdr"><div class="mtit">ახალი მომხმარებელი</div><button class="mcls" onclick="closeAdd()">✕</button></div>
+  <div class="mbdy">
+    <div class="mfld"><div class="mlbl">მეილი</div><input class="minp" id="nE" type="email" placeholder="user@example.com"/></div>
+    <div class="mfld"><div class="mlbl">პაროლი</div><input class="minp" id="nP" type="text" placeholder="პაროლი"/></div>
+    <div class="mfld"><div class="mlbl">სახელი (არასავალდებულო)</div><input class="minp" id="nN" type="text" placeholder="სახელი"/></div>
+    <div class="err" id="addErr"></div>
+    <button class="btnM" onclick="createUser()" style="margin-top:4px">შექმნა</button>
+  </div>
+</div>
+</div>
+
+<script>
+const B=location.origin;
+let S=null;
+
+document.getElementById('uP').addEventListener('keydown',e=>{if(e.key==='Enter')userLogin()});
+document.getElementById('aP').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
+
+function showA(){document.getElementById('uForm').style.display='none';document.getElementById('aForm').style.display='block'}
+function showU(){document.getElementById('aForm').style.display='none';document.getElementById('uForm').style.display='block'}
+
+function go(id){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userScreen').style.display='none';
+  document.getElementById('adminScreen').style.display='none';
+  document.getElementById(id).style.display='block';
+}
+
+function logout(){
+  S=null;
+  document.getElementById('uE').value='';
+  document.getElementById('uP').value='';
+  document.getElementById('aP').value='';
+  showU();
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('userScreen').style.display='none';
+  document.getElementById('adminScreen').style.display='none';
+}
+
+async function userLogin(){
+  const email=document.getElementById('uE').value.trim();
+  const pw=document.getElementById('uP').value;
+  const err=document.getElementById('uErr');
+  err.style.display='none';
+  if(!email||!pw){err.textContent='შეავსე ყველა ველი';err.style.display='block';return}
+  try{
+    const r=await fetch(B+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    const d=await r.json();
+    if(!r.ok||d.error){err.textContent=d.error==='blocked'?'🚫 დაბლოკილია':d.error==='inactive'?'⏸ გათიშულია':'❌ მეილი ან პაროლი არასწორია';err.style.display='block';return}
+    S={type:'user',token:d.token,email:d.email};
+    showUser(d);
+  }catch(e){err.textContent='❌ კავშირის შეცდომა';err.style.display='block'}
+}
+
+async function adminLogin(){
+  const pw=document.getElementById('aP').value;
+  const err=document.getElementById('aErr');
+  err.style.display='none';
+  try{
+    const r=await fetch(B+'/api/auth/admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    const d=await r.json();
+    if(!r.ok||d.error){err.textContent='❌ პაროლი არასწორია';err.style.display='block';return}
+    S={type:'admin',token:d.adminToken};
+    showAdmin();
+  }catch(e){err.textContent='❌ კავშირის შეცდომა';err.style.display='block'}
+}
+
+function showUser(d){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userScreen').style.display='block';
+  document.getElementById('uBadge').textContent=d.email;
+  document.getElementById('uTok').textContent=d.token;
+  const bm=`javascript:(function(){var s=document.createElement('script');s.src='${B}/b.js?t=${encodeURIComponent(d.token)}&_='+Date.now();document.body.appendChild(s);})();`;
+  document.getElementById('uBM').href=bm;
+}
+
+async function showAdmin(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminScreen').style.display='block';
+  await loadUsers();
+}
+
+async function loadUsers(){
+  const list=document.getElementById('uList');
+  list.innerHTML='<div class="load">იტვირთება...</div>';
+  try{
+    const r=await fetch(B+'/api/admin/users',{headers:{'x-admin-token':S.token}});
+    const d=await r.json();
+    const us=d.users||[];
+    document.getElementById('stT').textContent=us.length;
+    document.getElementById('stA').textContent=us.filter(u=>u.active&&!u.blocked).length;
+    document.getElementById('stB').textContent=us.filter(u=>u.blocked).length;
+    if(!us.length){list.innerHTML='<div class="load">👤 მომხმარებლები არ არის</div>';return}
+    list.innerHTML=`<div class="clist">${us.map(uRow).join('')}</div>`;
+  }catch(e){list.innerHTML='<div class="load">შეცდომა</div>'}
+}
+
+function uRow(u){
+  const sp=u.blocked?'<span class="pill pr">დაბლოკილი</span>':u.active?'<span class="pill pg">აქტიური</span>':'<span class="pill pgr">გათიშული</span>';
+  const tl=u.blocked?'განბლოკვა':u.active?'გათიშვა':'გააქტიურება';
+  const tc=u.blocked?'abg':u.active?'abgr':'abg';
+  const bl=u.blocked?'':`<button class="abt abr" onclick="blockU('${u.email}')">დაბლოკვა</button>`;
+  return `<div class="crow"><div class="ri" style="background:var(--bg);font-size:18px">👤</div><div class="rb"><div class="rt">${u.name||u.email}</div><div class="rs">${u.email} · ${u.usageCount||0}x</div></div><div class="rr">${sp}<button class="abt ${tc}" onclick="togU('${u.email}',${u.active},${u.blocked})">${tl}</button>${bl}</div></div>`;
+}
+
+async function togU(email,active,blocked){
+  await doU(email,blocked?'unblock':active?'deactivate':'activate');
+}
+async function blockU(email){
+  if(!confirm(email+' — დაბლოკვა?'))return;
+  await doU(email,'block');
+}
+async function doU(email,action){
+  try{await fetch(B+'/api/admin/user/action',{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':S.token},body:JSON.stringify({email,action})});await loadUsers();}catch(e){alert('შეცდომა')}
+}
+
+function openAdd(){document.getElementById('addModal').classList.add('open')}
+function closeAdd(){
+  document.getElementById('addModal').classList.remove('open');
+  ['nE','nP','nN'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addErr').style.display='none';
+}
+async function createUser(){
+  const email=document.getElementById('nE').value.trim();
+  const pw=document.getElementById('nP').value;
+  const name=document.getElementById('nN').value.trim();
+  const err=document.getElementById('addErr');
+  err.style.display='none';
+  if(!email||!pw){err.textContent='მეილი და პაროლი სავალდებულოა';err.style.display='block';return}
+  try{
+    const r=await fetch(B+'/api/admin/user/create',{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':S.token},body:JSON.stringify({email,password:pw,name})});
+    const d=await r.json();
+    if(!r.ok||d.error){err.textContent=d.error==='exists'?'ეს მეილი უკვე არსებობს':'❌ '+(d.error||'შეცდომა');err.style.display='block';return}
+    closeAdd();await loadUsers();
+  }catch(e){err.textContent='❌ კავშირის შეცდომა';err.style.display='block'}
+}
+
+function copyTok(){
+  const t=document.getElementById('uTok').textContent;
+  navigator.clipboard.writeText(t).then(()=>{
+    const b=document.querySelector('.cpbtn');
+    b.textContent='✅ დაკოპირდა!';
+    setTimeout(()=>{b.textContent='📋 ტოკენის კოპირება'},2000);
+  });
+}
+</script>
+</body>
+</html>
