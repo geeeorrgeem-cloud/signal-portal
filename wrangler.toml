@@ -1,8 +1,0 @@
-name = "signal-portal"
-compatibility_date = "2025-01-01"
-pages_build_output_dir = "public"
-
-[[kv_namespaces]]
-binding = "SIGNAL_KV"
-id = "REPLACE_WITH_YOUR_KV_ID"
-preview_id = "REPLACE_WITH_YOUR_KV_PREVIEW_ID"
